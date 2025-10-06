@@ -1,4 +1,32 @@
-/api/* https://your-backend-host.example.com/api/:splat 200
-/* /index.html 200
+    /api/* https://your-backend-host.example.com/api/:splat 200
+    /* /index.html 200
+    ```
+  - Replace `your-backend-host.example.com` with your real backend URL.
 
+- Redeploy:
+  - Trigger a fresh deploy. If issues persist, “Clear cache and deploy site” in Netlify.
 
+- If it still 404s:
+  - Use netlify.toml (alternative to _redirects) at repo root:
+    ```toml
+    [build]
+    base = "frontend"
+    command = "npm run build"
+    publish = "build"
+
+    [[redirects]]
+    from = "/api/*"
+    to = "https://your-backend-host.example.com/api/:splat"
+    status = 200
+    force = true
+
+    [[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
+    ```
+  - Redeploy after committing.
+
+- Quick diagnostic:
+  - Visiting a deep link like `/login` should load the app (served via `/* /index.html 200`).
+  - In DevTools → Network, `/api/*` requests should hit your backend URL.
